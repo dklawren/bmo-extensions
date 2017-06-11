@@ -8,5 +8,17 @@
 FROM mozillaconduit/docker-bmo
 MAINTAINER David Lawrence <dkl@mozilla.com>
 
-# Set ownership to bugzilla:bugzilla to allow git operations
-RUN chown -R $BUGZILLA_USER.$BUGZILLA_USER /var/www/html/bmo
+ENV BUGZILLA_ROOT /home/bugzilla/devel/htdocs/bmo
+
+# Packages
+COPY conf/rpm_list /rpm_list
+RUN yum -y install `cat /rpm_list` && yum clean all
+
+# Copy setup scripts
+COPY scripts/* /usr/local/bin/
+RUN chmod 755 /usr/local/bin/*
+
+# Development environment setup
+RUN su - $BUGZILLA_USER -c dev_config.sh
+
+RUN chown -R $BUGZILLA_USER.$BUGZILLA_USER /home/$BUGZILLA_USER

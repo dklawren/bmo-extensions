@@ -9,6 +9,9 @@ services:
       context: ./docker/bmo
       dockerfile: ./Dockerfile
     volumes:
+      - bmo-mysql-db:/var/lib/mysql
+      - /home/dkl/devel/.bz-dev.conf:/etc/bz-dev.conf:ro
+      - /home/dkl/devel:/home/bugzilla/devel
       - ./docker/bmo/conf/bugzilla.conf:/etc/httpd/conf.d/bugzilla.conf:ro
 
   phabricator:
@@ -51,4 +54,5 @@ services:
       - "1090:1090"
 
 volumes:
+  bmo-mysql-db:
   phabricator-mysql-db:
