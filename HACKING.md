@@ -84,6 +84,44 @@ USER app
 
 Those commands move our test repo into the box, as well as give us permissions to read/write that dir.
 
+## Hacking on phabricator-extensions at the same time as bmo-extensions
+
+1.  Clone https://github.com/mozilla-services/phabricator-extensions
+
+## bmo-extensions Modifications
+
+In the `bmo-extensions` project directory:
+
+1. Create a new file in the `bmo-extensions` project directory called `docker-compose.override.yml`.  Add the following contents:
+
+```yaml
+version: '2'
+services:
+  phabricator:
+    build:
+      context: /YOUR/PATH/TO/phabricator-extensions
+      dockerfile: ./Dockerfile
+```
+
+## phabricator-extensions modifications
+
+In the `phabricator-extensions` project directory:
+
+1. Create a `phabext.json` file with the contents `{}`. (It prevents the Dockerfile from breaking.)
+2. Create a directory called `test_repo`; in that repo, do `git init` and then create a commit.  This repo will appear in the phabricator container which will allow us to use arc diff.
+3. Add the following to `Dockerfile`:
+
+```
+# THROW ME AWAY
+USER root
+COPY test_repo /test_repo
+RUN apk add bash
+RUN chown -R app:app /test_repo
+USER app
+```
+
+Those commands move our test repo into the box, as well as give us permissions to read/write that dir.
+
 ## Caveats
 1.  The BMO container isn't pulling fresh code from mozilla-bteam/bmo master. To update, change to the bugzilla root directory (`/var/www/html/bmo`) and run `git pull`. This will pull the latest changes from the bugzilla repo. modperl is disabled for the 
 bugzilla instance so any changes you make to the code should show up immediately. You can create a diff of your changes by doing `git diff > /tmp/some.patch`. And then from the host system, do `docker cp bmoextensions_bmo.test_1:/tmp/some.patch .` to copy the patch out of the running container.
