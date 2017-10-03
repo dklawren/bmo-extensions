@@ -9,7 +9,7 @@ services:
       context: ./docker/bmo
       dockerfile: ./Dockerfile
     volumes:
-      - ./docker/bmo/conf/bugzilla.conf:/etc/httpd/conf.d/bugzilla.conf:ro
+      - bmo-mysql-db:/var/lib/mysql
 
   phabricator:
     image: mozilla/phabext
@@ -56,3 +56,4 @@ services:
 
 volumes:
   phabricator-mysql-db:
+  bmo-mysql-db:

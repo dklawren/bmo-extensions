@@ -8,5 +8,9 @@
 FROM mozillaconduit/docker-bmo
 MAINTAINER David Lawrence <dkl@mozilla.com>
 
+COPY scripts/* /usr/local/bin/
+RUN chmod +x /usr/local/bin/*
+RUN su - bugzilla -c dev_config.sh
+
 # Set ownership to bugzilla:bugzilla to allow git operations
 RUN chown -R $BUGZILLA_USER.$BUGZILLA_USER /var/www/html/bmo
